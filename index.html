@@ -340,53 +340,51 @@ document.querySelectorAll('.emoji-btn').forEach(btn => {
 });
 
 async function rewriteText() {
-    const name = document.getElementById('name').value;
-    const age = document.getElementById('age').value;
-    const profession = document.getElementById('profession').value;
-    const culture = document.getElementById('culture').value;
-    const tone = document.getElementById('tone').value;
-    const userText = document.getElementById('userText').value;
+  const name       = document.getElementById('name').value;
+  const age        = document.getElementById('age').value;
+  const profession = document.getElementById('profession').value;
+  const culture    = document.getElementById('culture').value;
+  const tone       = document.getElementById('tone').value;
+  const userText   = document.getElementById('userText').value;
+  const output     = document.getElementById('output');
+  const copyBtn    = document.getElementById('copyBtn');
 
-    if (!name || !age || !profession || !culture || !tone || !userText || !selectedEmoji) {
-        alert('Please fill in all fields and select an emoji!');
-        return;
+  if (!name||!age||!profession||!culture||!tone||!userText||!selectedEmoji) {
+    alert('Fill all fields + pick an emoji');
+    return;
+  }
+
+  output.innerHTML = '<div class="loading"><div class="spinner"></div>Transforming…</div>';
+  copyBtn.style.display = 'none';
+
+  try {
+    const res = await fetch('https://whowrites.onrender.com/rewrite', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name,
+        age,
+        profession,
+        culture,
+        tone,
+        emoji: selectedEmoji,
+        userText         
+      })
+    });
+
+    const data = await res.json();
+    console.log('API response:', data);
+
+    if (data.rewrittenText) {
+      output.innerHTML  = `<div class="output-text">${data.rewrittenText}</div>`;
+      copyBtn.style.display = 'block';
+    } else {
+      throw new Error('No rewrittenText in response');
     }
-
-    const output = document.getElementById('output');
-    const copyBtn = document.getElementById('copyBtn');
-    output.innerHTML = '<div class="loading"><div class="spinner"></div> Transforming your text...</div>';
-    copyBtn.style.display = 'none';
-
-    try {
-        const response = await fetch('https://whowrites.onrender.com', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                name,
-                age,
-                profession,
-                culture,
-                tone,
-                emoji: selectedEmoji,
-                userText
-            })
-        });
-
-        const data = await response.json();
-
-        if (data.rewrittenText) {
-            output.innerHTML = `<div class="output-text">${data.rewrittenText}</div>`;
-            copyBtn.style.display = 'block';
-        } else {
-            throw new Error("Missing response text");
-        }
-
-    } catch (error) {
-        console.error('Error:', error);
-        output.innerHTML = `<div class="output-text" style="color: red;">Failed to rewrite text. Make sure the server is running.</div>`;
-    }
+  } catch (err) {
+    console.error(err);
+    output.innerHTML = `<div class="output-text" style="color:red;">Error: ${err.message}</div>`;
+  }
 }
 
 </script>
