@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhoWrites - Transform Your Text</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1c1c1c2f 0%, #1c1c1c2f 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            background: linear-gradient(45deg, #000000, #000000);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+        }
+
+        .persona-section, .text-section {
+            padding: 40px;
+        }
+
+        .persona-section {
+            background: #f8f9fa;
+            border-right: 1px solid #e9ecef;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #4ecdc4;
+            box-shadow: 0 0 0 3px rgba(78, 205, 196, 0.1);
+        }
+
+        .emoji-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .emoji-btn {
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            font-size: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .emoji-btn:hover, .emoji-btn.selected {
+            border-color: #4ecdc4;
+            background: #f0fdfc;
+            transform: scale(1.1);
+        }
+
+        .text-area {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .rewrite-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(45deg, #000000, #000000);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .rewrite-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .rewrite-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .output-section {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 2px solid #e1e5e9;
+            min-height: 150px;
+        }
+
+        .output-text {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            color: #666;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #e1e5e9;
+            border-top: 2px solid #000000;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .example-section {
+            background: #f8f9fa;
+            padding: 30px 40px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .example {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border-left: 4px solid #000000;
+        }
+
+        .copy-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            float: right;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .persona-section {
+                border-right: none;
+                border-bottom: 1px solid #e9ecef;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✍️ WhoWrites</h1>
+            <p>Transform your text into any character's voice</p>
+        </div>
+
+        <div class="main-content">
+            <div class="persona-section">
+                <h2 class="section-title">👤 Create Your Character</h2>
+                
+                <div class="form-group">
+                    <label for="name">Character Name</label>
+                    <input type="text" id="name" placeholder="e.g., Sarah Chen">
+                </div>
+
+                <div class="form-group">
+                    <label for="age">Age</label>
+                    <input type="number" id="age" placeholder="e.g., 28" min="13" max="100">
+                </div>
+
+                <div class="form-group">
+                    <label for="profession">Profession</label>
+                    <input type="text" id="profession" placeholder="e.g., Marketing Manager">
+                </div>
+
+                <div class="form-group">
+                    <label for="culture">Cultural Background</label>
+                    <input type="text" id="culture" placeholder="e.g., Chinese-American, Bay Area">
+                </div>
+
+                <div class="form-group">
+                    <label for="tone">Tone</label>
+                    <select id="tone">
+                        <option value="">Select a tone...</option>
+                        <option value="Professional">Professional</option>
+                        <option value="Friendly">Friendly</option>
+                        <option value="Enthusiastic">Enthusiastic</option>
+                        <option value="Casual">Casual</option>
+                        <option value="Formal">Formal</option>
+                        <option value="Humorous">Humorous</option>
+                        <option value="Sarcastic">Sarcastic</option>
+                        <option value="Wise">Wise</option>
+                        <option value="Dramatic">Dramatic</option>
+                        <option value="Romantic">Romantic</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Signature Emoji</label>
+                    <div class="emoji-grid">
+                        <button class="emoji-btn" data-emoji="✨">✨</button>
+                        <button class="emoji-btn" data-emoji="🚀">🚀</button>
+                        <button class="emoji-btn" data-emoji="💡">💡</button>
+                        <button class="emoji-btn" data-emoji="🎯">🎯</button>
+                        <button class="emoji-btn" data-emoji="🔥">🔥</button>
+                        <button class="emoji-btn" data-emoji="💪">💪</button>
+                        <button class="emoji-btn" data-emoji="🌟">🌟</button>
+                        <button class="emoji-btn" data-emoji="🎉">🎉</button>
+                        <button class="emoji-btn" data-emoji="💖">💖</button>
+                        <button class="emoji-btn" data-emoji="🌈">🌈</button>
+                        <button class="emoji-btn" data-emoji="⚡">⚡</button>
+                        <button class="emoji-btn" data-emoji="🎨">🎨</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-section">
+                <h2 class="section-title">📝 Your Text</h2>
+                
+                <div class="form-group">
+                    <label for="userText">Enter text to rewrite</label>
+                    <textarea id="userText" class="text-area" placeholder="Type or paste your text here..."></textarea>
+                </div>
+
+                <button class="rewrite-btn" onclick="rewriteText()">
+                    Transform Text ✨
+                </button>
+
+                <div class="output-section">
+                    <div id="output" class="output-text">
+                        Your rewritten text will appear here...
+                    </div>
+                    <button class="copy-btn" id="copyBtn" onclick="copyOutput()" style="display: none;">
+                        Copy Text
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="example-section">
+            <h2 class="section-title">💡 Example</h2>
+            <div class="example">
+                <strong>Character:</strong> Sarah Chen, 28, Marketing Manager, Chinese-American Bay Area, Enthusiastic ✨<br>
+                <strong>Original:</strong> "The meeting is scheduled for tomorrow at 3 PM."<br>
+                <strong>Rewritten:</strong> "Hey team! Super excited for our sync tomorrow at 3 PM ✨ Can't wait to dive into those new campaign ideas!"
+            </div>
+        </div>
+    </div>
+
+    <script>
+let selectedEmoji = '';
+
+document.querySelectorAll('.emoji-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+        document.querySelectorAll('.emoji-btn').forEach(b => b.classList.remove('selected'));
+        this.classList.add('selected');
+        selectedEmoji = this.dataset.emoji;
+    });
+});
+
+async function rewriteText() {
+    const name = document.getElementById('name').value;
+    const age = document.getElementById('age').value;
+    const profession = document.getElementById('profession').value;
+    const culture = document.getElementById('culture').value;
+    const tone = document.getElementById('tone').value;
+    const userText = document.getElementById('userText').value;
+
+    if (!name || !age || !profession || !culture || !tone || !userText || !selectedEmoji) {
+        alert('Please fill in all fields and select an emoji!');
+        return;
+    }
+
+    const output = document.getElementById('output');
+    const copyBtn = document.getElementById('copyBtn');
+    output.innerHTML = '<div class="loading"><div class="spinner"></div> Transforming your text...</div>';
+    copyBtn.style.display = 'none';
+
+    try {
+        const response = await fetch('http://127.0.0.1:8000/rewrite', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                name,
+                age,
+                profession,
+                culture,
+                tone,
+                emoji: selectedEmoji,
+                userText
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.rewrittenText) {
+            output.innerHTML = `<div class="output-text">${data.rewrittenText}</div>`;
+            copyBtn.style.display = 'block';
+        } else {
+            throw new Error("Missing response text");
+        }
+
+    } catch (error) {
+        console.error('Error:', error);
+        output.innerHTML = `<div class="output-text" style="color: red;">Failed to rewrite text. Make sure the server is running.</div>`;
+    }
+}
+
+</script>
+    
+
+
+</body>
+</html>
